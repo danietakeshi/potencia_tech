@@ -3,6 +3,9 @@ menu = """
 [d] Depositar
 [s] Sacar
 [e] Extrato
+[nc] Nova Conta
+[lc] Listar Contas
+[nu] Novo Usuário
 [q] Sair
 
 => """
@@ -12,6 +15,43 @@ limite = 500
 extrato = []
 numero_saques = 0
 LIMITE_SAQUES = 3
+usuarios = []
+contas = []
+AGENCIA = '0001'
+
+def criar_usuario(usuarios):
+    cpf = input("Informe o CPF:")
+    usuario = filtrar_usuario(cpf, usuarios)
+
+    if usuario:
+        print("Já existe usuário com este CPF!")
+        return
+    
+    nome = input("Nome Completo:")
+    data_nascimento = input("Data de Nascimento (dd-mm-aaa):")
+    endereco = input("Informe o endereço: ")
+
+    usuarios.append({'nome': nome, 'data_nascimento': data_nascimento, 'cpf': cpf, 'endereco': endereco})
+
+    print('usuario criado com sucesso!')
+
+def criar_conta(agencia, numero_conta, usuarios):
+    cpf = input("Informe o CPF do Usuário: ")
+    usuario = filtrar_usuario(cpf, usuarios)
+
+    if usuario:
+        print("Conta criada com sucesso!")
+        return {"agencia": agencia, "numero_conta": numero_conta, "usuario": usuario}
+    
+    print("Usuário não encontrado, criação de conta encerrada!")
+
+def listar_contas(contas):
+    for conta in contas:
+        print(f"Agencia: {conta['agencia']} - Numero da CC: {conta['numero_conta']} - Usuario: {conta['usuario']['nome']}")
+
+def filtrar_usuario(cpf, usuarios):
+    usuarios_filtrados = [usuario for usuario in usuarios if usuario['cpf'] == cpf]
+    return usuarios_filtrados[0] if usuarios_filtrados else None
 
 def print_extrato(extrato):
     print("==============EXTRATO=======================\n")
@@ -76,6 +116,19 @@ while True:
 
     elif opcao == "e":
         print_extrato(extrato)
+
+    elif opcao == 'nu':
+        criar_usuario(usuarios)
+
+    elif opcao == 'nc':
+        numero_conta = len(contas) + 1
+        conta = criar_conta(AGENCIA, numero_conta, usuarios)
+
+        if conta:
+            contas.append(conta)
+
+    elif opcao == 'lc':
+        listar_contas(contas)
 
     elif opcao == "q":
         break
